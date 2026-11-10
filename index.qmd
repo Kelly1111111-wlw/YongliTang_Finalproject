@@ -37,7 +37,7 @@ This study will examine long-term trends in wildfire smoke PM₂.₅ across Cali
 
 ### Data Clean
 
-```{r, echo: false, message=F, warning=F}
+```{r setup, echo=F, message=F, warning=F}
 
 library(tidyverse)
 library(leaflet)
@@ -75,7 +75,7 @@ sapply(dailysmoke, class)
 
 Calculate seasonal mean daily smoke PM2.5, retain only summer and fall observations, and return a dataframe containing the Year, Season, and Grid_ID combinations.
 
-```{r, echo: false, message=F, warning=F}
+```{r data, echo=F, message=F, warning=F}
 
 grid_ids <- unique(dailysmoke$grid_id_10km)
 smoke_season <- dailysmoke |>
@@ -97,7 +97,7 @@ rm(dailysmoke)
 
 Load the GeoID shapefile, clip it to California's boundary, and join it with the seasonal mean smoke data to create an sf object named `smokeCA`.
 
-```{r,echo: false, message=F, warning=F}
+```{r map,echo=F, message=F, warning=F}
 library(sf)
 
 # Load the 10 km grid shapefile
@@ -128,7 +128,7 @@ sf::st_write(
 
 Convert the seasonal mean smoke data into raster format
 
-```{r,echo: false, message=F, warning=F}
+```{r conv,echo=F, message=F, warning=F}
 library(sf)
 library(terra)
 
@@ -177,14 +177,22 @@ for (ss in seasons) {
 ```
 
 ### Trend analysis
-    Apply Sen's slope and the Mann-Kendall test to estimate long-term trends and assess their statistical significance by season and pixel. (Packages: trend, Kendall)
+
+```         
+Apply Sen's slope and the Mann-Kendall test to estimate long-term trends and assess their statistical significance by season and pixel. (Packages: trend, Kendall)
+```
+
 ### Pixel-level correlation
-    Calculate Pearson correlation coefficients between seasonal drought indices and smoke PM2.5 time series for each pixel. (Package: stats)
+
+```         
+Calculate Pearson correlation coefficients between seasonal drought indices and smoke PM2.5 time series for each pixel. (Package: stats)
+```
 
 # Results
 
 Plot the daily mean smoke PM₂.₅ concentrations for summer and fall.
-```{R,echo: false, message=F, warning=F}
+
+```{R season,echo=F, message=F, warning=F}
 # plot the summer and fall mean
 # Calculate each pixel's mean across years, retaining zero-smoke years.
 summer_mean <- app(summer, fun = mean, na.rm = TRUE)
@@ -249,6 +257,7 @@ writeRaster(fall_result, "data/PM25_CA_fall_trend.tif", overwrite = TRUE)
 ```
 
 Visualize pixel-level Sen's slopes and Mann–Kendall (MK) statistics.
+
 ```{R}
 # Plot the summer and fall trend
 library(terra)
@@ -328,7 +337,6 @@ ggsave("data/PM25_CA_trend_2x2.png", p, width = 10, height = 10, dpi = 300, bg =
 
 ```
 
-
 ```{r, results='asis'}
 # Monthly Drought index
 library(terra)
@@ -399,25 +407,12 @@ nlyr(seasonal_mean)
 
 ```
 
-
-Add any additional processing steps here.
-
-Tables and figures (maps and other graphics) are carefully planned to convey the results of your analysis. Intense exploration and evidence of many trials and failures. The author looked at the data in many different ways before coming to the final presentation of the data.
-
-Show tables, plots, etc. and describe them.
-
 ```{r, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
 m <- leaflet(data) %>% 
   addTiles() %>% 
   addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %>% 
   addPopups(~x[2], ~y[2], "Random popup")
 m  # a map with the default OSM tile layer
-```
-
-```{r}
-data %>% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()
 ```
 
 ### Dygraphs Example
@@ -429,8 +424,6 @@ dygraph(nhtemp, main = "New Haven Temperatures") |>
 ```
 
 # Conclusions
-
-\[\~200 words\]
 
 Clear summary adequately describing the results and putting them in context. Discussion of further questions and ways to continue investigation.
 
